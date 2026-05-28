@@ -2,7 +2,18 @@ const app = require('express')();
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const cors = require('cors');
 const authMiddleware = require('./authmiddlware');
-app.use(cors());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// Phải xử lý OPTIONS preflight TRƯỚC authMiddleware
+app.options('*', cors());
+app.use('/', (req, res, next) => {
+    console.log('method:', req.method, 'path:', req.path, 'res: ', res.statusCode);
+    next();
+});
 app.use(authMiddleware); // Apply authentication middleware to all routes
 // Proxy configuration
 const serviceProxy = createProxyMiddleware({

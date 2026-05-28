@@ -1,6 +1,7 @@
 const { pool } = require('../../Share/config/db.config');
 const { User, validateUser } = require('./user.model');
-
+const jwt = require('jsonwebtoken');
+const env = require('../../Share/config/enviroment');
 const UserController = {
     getAllUsers: async (req, res) => {
         try {
@@ -57,7 +58,19 @@ const UserController = {
         } catch (error) {
             res.status(500).json({ message: 'Lỗi Server', error: error.message });
         }
+    },
+    login: async (req, res) => {
+        try {
+            const { email, password } = req.body;
+            const [rows] = await pool.query('SELECT * FROM Users WHERE email = ? AND password = ?', [email, password]);
+            if (rows.length === 0) return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng' });
+            const user = new User(rows[0]);
+            const token = jwt.sign({ id: user.id, role: user.role }, env.JWT_SECRET, { expiresIn: '1h' });
+            res.status(200).json({ message: 'Đăng nhập thành công', user, token });
+        } catch (error) {
+            res.status(500).json({ message: 'Lỗi Server', error: error.message });
+        }
     }
-};
+}
 
 module.exports = UserController;

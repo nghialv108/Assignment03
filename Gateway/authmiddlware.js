@@ -1,7 +1,13 @@
 const jwt = require('jsonwebtoken');
 // Giả định bạn đã import jwt và env ở trên
+const env = require('./enviroment');
+const PUBLIC = ['/api/service/users/login', '/api/service/users/register']; // Các endpoint không cần auth
 
 const authMiddleware = async (req, res, next) => {
+    // 1. Bỏ qua các endpoint công khai
+    if (PUBLIC.includes(req.path)) {
+        return next();
+    }
     const authHeader = req.headers['authorization'];
 
     // Kiểm tra luôn định dạng Bearer cho chặt chẽ

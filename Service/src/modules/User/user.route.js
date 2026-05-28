@@ -4,8 +4,9 @@ const UserController = require('./user.controller');
 const { requireAuth, requireRole } = require('../../Share/middleware/auth.middleware');
 
 // Đăng ký tài khoản (Không cần đăng nhập)
-router.post('/', UserController.createUser);
+router.post('/register', UserController.createUser);
 
+router.post('/login', UserController.login);
 // Các tính năng cần đăng nhập
 router.use(requireAuth);
 

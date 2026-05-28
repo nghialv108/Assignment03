@@ -1,10 +1,14 @@
 const env = require('./Share/config/enviroment');
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const { checkConnection } = require('./Share/config/db.config');
 
 app.use(express.json());
-
+app.use('/', (req, res, next) => {
+    console.log('method:', req.method, 'path:', req.path, 'res: ', res.statusCode);
+    next();
+});
 // Import Routes
 const userRoutes = require('./modules/User/user.route');
 const categoryRoutes = require('./modules/Category/category.route');
